@@ -17,7 +17,8 @@ export type SupportedCli =
     | 'windsurf'
     | 'roo-code'
     | 'zed'
-    | 'factory-droid';
+    | 'factory-droid'
+    | 'antigravity';
 
 /** Configuration scope - user-level or project-level */
 export type ConfigScope = 'user' | 'project';
@@ -95,6 +96,10 @@ function getConfigFileInfo(cli: SupportedCli, scope: ConfigScope): ConfigFileInf
         'factory-droid': {
             user: { path: path.join(home, '.factory', 'mcp.json'), wrapperKey: 'mcpServers', serverKey: 'jira' },
             project: { path: path.join(cwd, '.factory', 'mcp.json'), wrapperKey: 'mcpServers', serverKey: 'jira' },
+        },
+        'antigravity': {
+            user: { path: path.join(home, '.gemini', 'antigravity', 'mcp_config.json'), wrapperKey: 'mcpServers', serverKey: 'jira' },
+            project: { path: '', wrapperKey: '', serverKey: '' }, // Antigravity only supports user-level config
         },
     };
 
@@ -247,7 +252,7 @@ export function parseSetupArgs(args: string[]): SetupOptions | null {
     // Validate required fields
     const validClis: SupportedCli[] = [
         'claude-code', 'claude-desktop', 'copilot', 'cursor',
-        'windsurf', 'roo-code', 'zed', 'factory-droid'
+        'windsurf', 'roo-code', 'zed', 'factory-droid', 'antigravity'
     ];
 
     if (!options.cli || !validClis.includes(options.cli)) {
@@ -276,7 +281,7 @@ Usage:
 Arguments:
   -c, --cli        Target CLI tool (required)
                    Options: claude-code, claude-desktop, copilot, cursor,
-                            windsurf, roo-code, zed, factory-droid
+                            windsurf, roo-code, zed, factory-droid, antigravity
 
   -b, --base-url   Jira base URL (required)
                    Example: https://jira.example.com
@@ -310,6 +315,7 @@ Supported CLI Tools:
   │ roo-code       │ ~/.roo/mcp.json (user) | .roo/mcp.json (project)      │
   │ zed            │ ~/.config/zed/settings.json (user)                    │
   │ factory-droid  │ ~/.factory/mcp.json (user) | .factory/mcp.json (proj) │
+  │ antigravity    │ ~/.gemini/antigravity/mcp_config.json (user only)     │
   └────────────────┴───────────────────────────────────────────────────────┘
 `);
 }
@@ -328,5 +334,6 @@ Supported CLI tools:
   • roo-code        - Roo Code
   • zed             - Zed Editor
   • factory-droid   - Factory Droid AI
+  • antigravity     - Google Antigravity IDE
 `);
 }

@@ -74,6 +74,7 @@ npx @lvmk/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
 | **Roo Code** | `roo-code` | `~/.roo/mcp.json` (user) / `.roo/mcp.json` (project) |
 | **Zed** | `zed` | `~/.config/zed/settings.json` |
 | **Factory Droid** | `factory-droid` | `~/.factory/mcp.json` (user) / `.factory/mcp.json` (project) |
+| **Google Antigravity** | `antigravity` | `~/.gemini/antigravity/mcp_config.json` (user only) |
 
 ### Setup Examples
 

@@ -497,6 +497,114 @@ async function testOpenCodeSetupCommand(): Promise<void> {
 }
 
 // ============================================================================
+// GOOGLE ANTIGRAVITY INTEGRATION TESTS
+// ============================================================================
+
+async function testAntigravitySetupCommand(): Promise<void> {
+    console.log('\n' + '='.repeat(60));
+    console.log('CLI Setup Command Test - Google Antigravity');
+    console.log('='.repeat(60) + '\n');
+
+    const home = os.homedir();
+    const configPath = path.join(home, '.gemini', 'antigravity', 'mcp_config.json');
+    const backupPath = configPath + '.backup';
+
+    // Check if Antigravity config directory exists
+    if (!fs.existsSync(path.dirname(configPath))) {
+        results.push({
+            name: 'CLI Setup (Antigravity) - Directory Check',
+            passed: false,
+            message: 'Antigravity not installed (~/.gemini/antigravity not found)',
+            skipped: true,
+        });
+        console.log('⚠️  Skipping: Antigravity not installed\n');
+        return;
+    }
+
+    // Backup existing config
+    let hasBackup = false;
+    if (fs.existsSync(configPath)) {
+        fs.copyFileSync(configPath, backupPath);
+        hasBackup = true;
+        console.log('✓ Backed up existing config\n');
+    }
+
+    try {
+        // Test 1: Run our CLI setup command
+        console.log('Testing: npx @lvmk/jira-mcp setup -c antigravity (simulated)...');
+        const setupResult = runSetup('antigravity', 'user');
+
+        if (setupResult.success) {
+            results.push({
+                name: 'CLI Setup (Antigravity) - Setup Command',
+                passed: true,
+                message: 'Setup command executed successfully',
+            });
+            console.log('✅ Setup Command PASSED');
+            console.log(`   Output: ${setupResult.output.trim()}`);
+        } else {
+            results.push({
+                name: 'CLI Setup (Antigravity) - Setup Command',
+                passed: false,
+                message: setupResult.output,
+            });
+            console.log('❌ Setup Command FAILED:', setupResult.output);
+            return;
+        }
+
+        // Test 2: Verify mcp_config.json structure
+        console.log('\nTesting: Verify mcp_config.json config...');
+        try {
+            const configContent = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+            if (configContent.mcpServers?.jira?.command === 'npx') {
+                results.push({
+                    name: 'CLI Setup (Antigravity) - Config File',
+                    passed: true,
+                    message: 'mcp_config.json contains correct Jira MCP configuration',
+                });
+                console.log('✅ Config File PASSED');
+            } else {
+                results.push({
+                    name: 'CLI Setup (Antigravity) - Config File',
+                    passed: false,
+                    message: 'Config structure incorrect or jira not found',
+                });
+                console.log('❌ Config File FAILED');
+            }
+        } catch (error) {
+            results.push({
+                name: 'CLI Setup (Antigravity) - Config File',
+                passed: false,
+                message: (error as Error).message,
+            });
+            console.log('❌ Config File FAILED:', (error as Error).message);
+        }
+
+    } finally {
+        // Restore backup
+        console.log('\nRestoring original config...');
+        if (hasBackup) {
+            fs.copyFileSync(backupPath, configPath);
+            fs.unlinkSync(backupPath);
+            console.log('✓ Restored original config');
+        } else {
+            // Remove jira from config if we added it
+            try {
+                const configContent = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+                if (configContent.mcpServers?.jira) {
+                    delete configContent.mcpServers.jira;
+                    fs.writeFileSync(configPath, JSON.stringify(configContent, null, '\t') + '\n');
+                    console.log('✓ Removed test jira config');
+                }
+            } catch {
+                console.log('ℹ️  Cleanup attempted');
+            }
+        }
+    }
+}
+
+// ============================================================================
 // OPENCODE INTEGRATION TESTS
 // ============================================================================
 
@@ -654,6 +762,7 @@ async function runIntegrationTests(): Promise<void> {
 
     await testClaudeCodeIntegration();
     await testClaudeCodeSetupCommand();
+    await testAntigravitySetupCommand();
     await testOpenCodeIntegration();
     await testOpenCodeSetupCommand();
 
