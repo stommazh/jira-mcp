@@ -68,13 +68,14 @@ npx @lvmk/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
 |----------|---------|------------------|
 | **Claude Code** | `claude-code` | `~/.claude.json` (user) / `.mcp.json` (project) |
 | **Claude Desktop** | `claude-desktop` | `~/Library/Application Support/Claude/...` |
-| **GitHub Copilot** | `copilot` | `~/.mcp.json` (user) / `.vscode/mcp.json` (project) |
+| **GitHub Copilot** | `github-copilot` | `~/.mcp.json` (user) / `.vscode/mcp.json` (project) |
 | **Cursor** | `cursor` | `~/.cursor/mcp.json` (user) / `.cursor/mcp.json` (project) |
 | **Windsurf** | `windsurf` | `~/.codeium/windsurf/mcp_config.json` |
 | **Roo Code** | `roo-code` | `~/.roo/mcp.json` (user) / `.roo/mcp.json` (project) |
 | **Zed** | `zed` | `~/.config/zed/settings.json` |
 | **Factory Droid** | `factory-droid` | `~/.factory/mcp.json` (user) / `.factory/mcp.json` (project) |
 | **Google Antigravity** | `antigravity` | `~/.gemini/antigravity/mcp_config.json` (user only) |
+| **Gemini CLI** | `gemini-cli` | `~/.gemini/settings.json` (user) / `.gemini/settings.json` (project) |
 
 ### Setup Examples
 
@@ -86,10 +87,13 @@ npx @lvmk/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p 
 npx @lvmk/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
 
 # GitHub Copilot (VS Code project config)
-npx @lvmk/jira-mcp setup -c copilot -b https://jira.example.com -u admin -p secret -s project
+npx @lvmk/jira-mcp setup -c github-copilot -b https://jira.example.com -u admin -p secret -s project
 
 # Claude Desktop
 npx @lvmk/jira-mcp setup -c claude-desktop -b https://jira.example.com -u admin -p secret
+
+# Gemini CLI
+npx @lvmk/jira-mcp setup -c gemini-cli -b https://jira.example.com -u admin -p secret
 
 # Factory Droid
 npx @lvmk/jira-mcp setup -c factory-droid -b https://jira.example.com -u admin -p secret
