@@ -81,23 +81,35 @@ export function createSearchTools(client: JiraClient) {
 export const searchToolDefinitions = [
     {
         name: 'jira_search',
-        description:
-            'Search for Jira issues using JQL (Jira Query Language). Examples: "project = PROJ", "assignee = currentUser()", "status = Open"',
+        description: `Find Jira issues matching specific criteria. Use when user asks to:
+- Find, list, or show issues (bugs, tasks, stories, epics)
+- Search for work by status, assignee, project, priority, or date
+- Get open, closed, in-progress, or unassigned items
+- Find "my tasks" or someone else's work
+- List recent or updated issues
+
+Build JQL from natural language requests:
+- "my open bugs" → assignee = currentUser() AND type = Bug AND status != Done
+- "high priority tasks in PROJECT" → project = PROJECT AND type = Task AND priority = High
+- "issues updated this week" → updated >= startOfWeek()
+- "unassigned bugs" → assignee IS EMPTY AND type = Bug
+
+Common JQL fields: project, status, assignee, reporter, priority, type, created, updated, due`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 jql: {
                     type: 'string',
-                    description: 'JQL query string',
+                    description: 'JQL query. Examples: "project = PROJ AND status = Open", "assignee = currentUser() AND type = Bug"',
                 },
                 maxResults: {
                     type: 'number',
-                    description: 'Maximum number of results to return (1-100)',
+                    description: 'Max results (1-100, default 50)',
                     default: 50,
                 },
                 startAt: {
                     type: 'number',
-                    description: 'Starting index for pagination',
+                    description: 'Pagination offset (default 0)',
                     default: 0,
                 },
                 fields: {
@@ -110,3 +122,4 @@ export const searchToolDefinitions = [
         },
     },
 ];
+

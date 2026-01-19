@@ -82,18 +82,23 @@ export function createTransitionTools(client: JiraClient) {
 
 /**
  * Tool definitions for transition operations.
+ * Semantic descriptions help AI understand workflow operations.
  */
 export const transitionToolDefinitions = [
     {
         name: 'jira_get_transitions',
-        description:
-            'Get available workflow transitions for a Jira issue. Use this to find valid transition IDs before transitioning an issue.',
+        description: `Get available workflow transitions for an issue. Use FIRST when user wants to:
+- Move an issue to a different status
+- Start, complete, close, or reopen a ticket
+- Change workflow state
+
+Returns list of valid transitions with IDs. Required before calling jira_transition_issue.`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 issueKey: {
                     type: 'string',
-                    description: 'The issue key or ID',
+                    description: 'Issue key like PROJ-123',
                 },
             },
             required: ['issueKey'],
@@ -101,25 +106,31 @@ export const transitionToolDefinitions = [
     },
     {
         name: 'jira_transition_issue',
-        description:
-            'Transition a Jira issue to a new status. First use jira_get_transitions to get valid transition IDs.',
+        description: `Move a Jira issue to a new workflow status. Use when user wants to:
+- Start working on a ticket (→ In Progress)
+- Complete or close an issue (→ Done)
+- Reopen a closed issue
+- Change issue status
+
+IMPORTANT: Call jira_get_transitions first to get valid transition IDs.`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 issueKey: {
                     type: 'string',
-                    description: 'The issue key or ID',
+                    description: 'Issue key to transition',
                 },
                 transitionId: {
                     type: 'string',
-                    description: 'The ID of the transition to execute',
+                    description: 'Transition ID from jira_get_transitions',
                 },
                 comment: {
                     type: 'string',
-                    description: 'Optional comment to add during transition',
+                    description: 'Optional comment to add with transition',
                 },
             },
             required: ['issueKey', 'transitionId'],
         },
     },
 ];
+

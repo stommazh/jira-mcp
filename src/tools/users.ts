@@ -74,11 +74,15 @@ export function createUserTools(client: JiraClient) {
 
 /**
  * Tool definitions for user operations.
+ * Semantic descriptions help AI understand user lookups.
  */
 export const userToolDefinitions = [
     {
         name: 'jira_get_current_user',
-        description: 'Get information about the currently authenticated Jira user',
+        description: `Get the currently logged-in Jira user's info. Use when user asks:
+- "Who am I logged in as?"
+- "What's my Jira username?"
+- Need to know the current user for searches like "my issues"`,
         inputSchema: {
             type: 'object' as const,
             properties: {},
@@ -87,16 +91,20 @@ export const userToolDefinitions = [
     },
     {
         name: 'jira_get_user',
-        description: 'Get information about a Jira user by username',
+        description: `Look up a Jira user by username. Use when user wants to:
+- Find info about a specific team member
+- Check if a username exists
+- Get a user's display name or email`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 username: {
                     type: 'string',
-                    description: 'The username to look up',
+                    description: 'Jira username to look up',
                 },
             },
             required: ['username'],
         },
     },
 ];
+

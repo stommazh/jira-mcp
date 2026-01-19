@@ -78,11 +78,16 @@ export function createProjectTools(client: JiraClient) {
 
 /**
  * Tool definitions for project operations.
+ * Semantic descriptions help AI understand project browsing.
  */
 export const projectToolDefinitions = [
     {
         name: 'jira_list_projects',
-        description: 'List all Jira projects accessible to the authenticated user',
+        description: `List all Jira projects accessible to the user. Use when user wants to:
+- See available projects
+- Find a project key
+- Browse what projects exist
+- Get project list for searching issues`,
         inputSchema: {
             type: 'object' as const,
             properties: {},
@@ -91,16 +96,20 @@ export const projectToolDefinitions = [
     },
     {
         name: 'jira_get_project',
-        description: 'Get details of a specific Jira project',
+        description: `Get details of a specific Jira project. Use when user wants to:
+- Get info about a project by key
+- See project description or lead
+- Check project details`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 projectKey: {
                     type: 'string',
-                    description: 'The project key (e.g., "PROJ") or ID',
+                    description: 'Project key like "PROJ"',
                 },
             },
             required: ['projectKey'],
         },
     },
 ];
+

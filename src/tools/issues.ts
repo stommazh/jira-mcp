@@ -254,21 +254,27 @@ export function createIssueTools(client: JiraClient) {
 
 /**
  * Tool definitions for issue-related operations.
+ * Semantic descriptions help AI understand when to use each tool.
  */
 export const issueToolDefinitions = [
     {
         name: 'jira_get_issue',
-        description: 'Get details of a Jira issue by its key or ID',
+        description: `Retrieve full details of a specific Jira issue. Use when user:
+- Asks about a specific ticket by key (PROJ-123) or ID
+- Wants to see issue details, description, status, or assignee
+- Needs information about a particular work item
+
+Returns: summary, description, status, priority, assignee, reporter, labels, dates.`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 issueKey: {
                     type: 'string',
-                    description: 'The issue key (e.g., "PROJ-123") or ID',
+                    description: 'Issue key like PROJ-123 or numeric ID',
                 },
                 fields: {
                     type: 'string',
-                    description: 'Comma-separated list of fields to return',
+                    description: 'Comma-separated fields to return (optional)',
                 },
             },
             required: ['issueKey'],
@@ -276,39 +282,45 @@ export const issueToolDefinitions = [
     },
     {
         name: 'jira_create_issue',
-        description: 'Create a new Jira issue',
+        description: `Create a new issue in Jira. Use when user wants to:
+- Log a bug, task, story, or any work item
+- Report a problem or request a feature
+- Create a ticket for new work
+- Add something to the backlog
+
+Defaults to 'Task' type. Common types: Bug, Task, Story, Epic, Sub-task.`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 projectKey: {
                     type: 'string',
-                    description: 'The project key (e.g., "PROJ")',
+                    description: 'Project key like "PROJ"',
                 },
                 summary: {
                     type: 'string',
-                    description: 'Issue summary/title',
+                    description: 'Issue title/summary',
                 },
                 issueType: {
                     type: 'string',
-                    description: 'Issue type name (e.g., "Bug", "Task", "Story")',
+                    description: 'Type: Bug, Task, Story, Epic (default: Task)',
                     default: 'Task',
                 },
                 description: {
                     type: 'string',
-                    description: 'Issue description',
+                    description: 'Detailed description',
                 },
                 assignee: {
                     type: 'string',
-                    description: 'Assignee username',
+                    description: 'Username to assign to',
                 },
                 priority: {
                     type: 'string',
-                    description: 'Priority name (e.g., "High", "Medium")',
+                    description: 'Priority: Highest, High, Medium, Low, Lowest',
                 },
                 labels: {
                     type: 'array',
                     items: { type: 'string' },
-                    description: 'Array of labels',
+                    description: 'Labels to add',
                 },
             },
             required: ['projectKey', 'summary'],
@@ -316,17 +328,21 @@ export const issueToolDefinitions = [
     },
     {
         name: 'jira_update_issue',
-        description: 'Update an existing Jira issue',
+        description: `Update an existing Jira issue. Use when user wants to:
+- Change issue summary, description, or priority
+- Reassign to someone else or unassign
+- Update labels or other fields
+- Modify ticket details`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 issueKey: {
                     type: 'string',
-                    description: 'The issue key or ID to update',
+                    description: 'Issue key like PROJ-123',
                 },
                 summary: {
                     type: 'string',
-                    description: 'New summary',
+                    description: 'New summary/title',
                 },
                 description: {
                     type: 'string',
@@ -338,12 +354,12 @@ export const issueToolDefinitions = [
                 },
                 priority: {
                     type: 'string',
-                    description: 'New priority name',
+                    description: 'New priority level',
                 },
                 labels: {
                     type: 'array',
                     items: { type: 'string' },
-                    description: 'New labels array',
+                    description: 'New labels (replaces existing)',
                 },
             },
             required: ['issueKey'],
@@ -351,17 +367,21 @@ export const issueToolDefinitions = [
     },
     {
         name: 'jira_delete_issue',
-        description: 'Delete a Jira issue',
+        description: `Delete a Jira issue permanently. Use when user explicitly asks to:
+- Delete or remove an issue
+- Permanently remove a ticket
+
+WARNING: This permanently deletes the issue. Consider transitioning to Closed instead.`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 issueKey: {
                     type: 'string',
-                    description: 'The issue key or ID to delete',
+                    description: 'Issue key to delete',
                 },
                 deleteSubtasks: {
                     type: 'boolean',
-                    description: 'Whether to also delete subtasks',
+                    description: 'Also delete subtasks (default: false)',
                     default: false,
                 },
             },
@@ -370,17 +390,21 @@ export const issueToolDefinitions = [
     },
     {
         name: 'jira_add_comment',
-        description: 'Add a comment to a Jira issue',
+        description: `Add a comment to a Jira issue. Use when user wants to:
+- Comment on a ticket
+- Add notes or feedback to an issue
+- Leave a message on a work item
+- Document something on a ticket`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 issueKey: {
                     type: 'string',
-                    description: 'The issue key or ID',
+                    description: 'Issue key to comment on',
                 },
                 body: {
                     type: 'string',
-                    description: 'Comment body text',
+                    description: 'Comment text',
                 },
             },
             required: ['issueKey', 'body'],
@@ -388,16 +412,20 @@ export const issueToolDefinitions = [
     },
     {
         name: 'jira_get_comments',
-        description: 'Get all comments on a Jira issue',
+        description: `Get all comments on a Jira issue. Use when user wants to:
+- See comments or discussion on a ticket
+- Review feedback on an issue
+- Check what was said on a work item`,
         inputSchema: {
             type: 'object' as const,
             properties: {
                 issueKey: {
                     type: 'string',
-                    description: 'The issue key or ID',
+                    description: 'Issue key to get comments from',
                 },
             },
             required: ['issueKey'],
         },
     },
 ];
+
