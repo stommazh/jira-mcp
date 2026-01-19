@@ -2,7 +2,9 @@
 /**
  * @file index.ts
  * @description Main entry point for the Jira MCP server.
- * Sets up the MCP server with stdio transport and registers all Jira tools.
+ * Supports two modes:
+ * 1. MCP Server mode (default) - Runs as stdio MCP server for AI tools
+ * 2. Setup mode - Injects MCP configuration into AI tool config files
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -26,6 +28,12 @@ import {
     createUserTools,
     userToolDefinitions,
 } from './tools/index.js';
+import {
+    parseSetupArgs,
+    injectMcpConfig,
+    printSetupHelp,
+    printSupportedClis,
+} from './setup.js';
 
 /**
  * Package information for server identification.
@@ -36,9 +44,119 @@ const SERVER_INFO = {
 };
 
 /**
+ * Prints general help message.
+ */
+function printHelp(): void {
+    console.log(`
+@lvmk/jira-mcp - Jira MCP Server for Legacy Jira Server (Basic Auth)
+
+MODES:
+
+  1. MCP Server Mode (default)
+     Run as an MCP server for AI tools to connect to.
+     
+     Required Environment Variables:
+       JIRA_BASE_URL  - Jira server URL (e.g., https://jira.example.com)
+       JIRA_USERNAME  - Username for basic auth
+       JIRA_PASSWORD  - Password for basic auth
+
+     Usage:
+       npx @lvmk/jira-mcp
+
+  2. Setup Mode
+     Inject MCP configuration into AI tool config files.
+
+     Usage:
+       npx @lvmk/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
+
+     Run 'npx @lvmk/jira-mcp setup --help' for more details.
+
+COMMANDS:
+  setup       Configure MCP in AI tool config files
+  list-clis   List supported AI CLI tools
+  --help      Show this help message
+  --version   Show version
+
+EXAMPLES:
+  # Run as MCP server
+  JIRA_BASE_URL=https://jira.example.com JIRA_USERNAME=admin JIRA_PASSWORD=secret npx @lvmk/jira-mcp
+
+  # Setup for Claude Code
+  npx @lvmk/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
+
+  # Setup for Cursor (project scope)
+  npx @lvmk/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
+`);
+}
+
+/**
+ * Handles CLI commands and arguments.
+ * @returns true if handled as CLI command, false to continue as MCP server
+ */
+function handleCliCommands(): boolean {
+    const args = process.argv.slice(2);
+
+    if (args.length === 0) {
+        return false; // No args, run as MCP server
+    }
+
+    const command = args[0];
+
+    switch (command) {
+        case '--help':
+        case '-h':
+        case 'help':
+            printHelp();
+            return true;
+
+        case '--version':
+        case '-v':
+            console.log(SERVER_INFO.version);
+            return true;
+
+        case 'list-clis':
+            printSupportedClis();
+            return true;
+
+        case 'setup': {
+            const setupArgs = args.slice(1);
+
+            if (setupArgs.length === 0 || setupArgs.includes('--help') || setupArgs.includes('-h')) {
+                printSetupHelp();
+                return true;
+            }
+
+            const options = parseSetupArgs(setupArgs);
+            if (!options) {
+                console.error('Error: Invalid arguments. Run with --help for usage.\n');
+                printSetupHelp();
+                process.exit(1);
+            }
+
+            const result = injectMcpConfig(options);
+            console.log(result.message);
+
+            if (!result.success) {
+                process.exit(1);
+            }
+            return true;
+        }
+
+        default:
+            // Unknown command, check if it looks like MCP server mode
+            if (command.startsWith('-')) {
+                console.error(`Unknown option: ${command}`);
+                printHelp();
+                process.exit(1);
+            }
+            return false;
+    }
+}
+
+/**
  * Main function to initialize and run the MCP server.
  */
-async function main(): Promise<void> {
+async function runMcpServer(): Promise<void> {
     // Load and validate configuration from environment
     let config;
     try {
@@ -140,8 +258,14 @@ async function main(): Promise<void> {
     console.error(`Jira MCP server started - connected to ${config.JIRA_BASE_URL}`);
 }
 
-// Run the server
-main().catch((error) => {
-    console.error('Fatal error:', error);
-    process.exit(1);
-});
+// Main entry point
+if (handleCliCommands()) {
+    // CLI command handled, exit normally
+    process.exit(0);
+} else {
+    // Run as MCP server
+    runMcpServer().catch((error) => {
+        console.error('Fatal error:', error);
+        process.exit(1);
+    });
+}

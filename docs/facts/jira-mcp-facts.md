@@ -72,3 +72,54 @@ Example: `http://jira.example.com:8080/rest/api/2/issue/PROJ-123`
 ### Error Handling
 - `JiraApiError` class with status code and body
 - Graceful error responses in MCP format with `isError: true`
+
+## Testing
+
+### Test Commands
+```bash
+npm run test:all     # Run all tests
+npm run test         # Client tests only
+npm run test:tools   # Tool handler tests only
+npm run test:build   # Build tests without running
+```
+
+### Test Coverage
+- Client integration tests (6 tests)
+- Tool handler tests (6 tests)
+- Tests against live Jira instance using `.env` credentials
+
+### Alternative for Newer Jira
+For Jira Cloud or Jira Data Center 8.14+ with PAT/OAuth support:
+- Use [mcp-atlassian](https://github.com/sooperset/mcp-atlassian)
+
+## CLI Setup Feature
+
+### Supported CLI Tools
+| Tool | Command | Scope Support |
+|------|---------|---------------|
+| Claude Code | `claude-code` | user, project |
+| Claude Desktop | `claude-desktop` | user only |
+| GitHub Copilot | `copilot` | user, project |
+| Cursor | `cursor` | user, project |
+| Windsurf | `windsurf` | user, project |
+| Roo Code | `roo-code` | user, project |
+| Zed | `zed` | user, project |
+| Factory Droid | `factory-droid` | user, project |
+
+### Usage
+```bash
+npx @lvmk/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
+```
+
+### Short Arguments
+- `-c` / `--cli` - Target CLI tool
+- `-b` / `--base-url` - Jira URL
+- `-u` / `--username` - Username
+- `-p` / `--password` - Password
+- `-s` / `--scope` - `user` or `project`
+
+## Claude Code Lazy Loading (2025)
+- Claude Code v2.1.7+ supports lazy/dynamic tool loading
+- Tools are discovered via "Tool Search" feature
+- Reduces context token usage from 134k to ~5k tokens
+- Uses regex or natural language queries for discovery

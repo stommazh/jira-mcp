@@ -29,6 +29,76 @@ Or install globally:
 npm install -g @lvmk/jira-mcp
 ```
 
+---
+
+## ⚡ Quick CLI Setup
+
+Automatically inject MCP configuration into your AI tool's config file with a single command:
+
+```bash
+npx @lvmk/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
+```
+
+### Arguments
+
+| Short | Long | Description |
+|-------|------|-------------|
+| `-c` | `--cli` | Target CLI tool (**required**) |
+| `-b` | `--base-url` | Jira base URL (**required**) |
+| `-u` | `--username` | Jira username (**required**) |
+| `-p` | `--password` | Jira password (**required**) |
+| `-s` | `--scope` | `user` or `project` (default: `user`) |
+
+### Supported CLI Tools
+
+| CLI Tool | Command | Config Locations |
+|----------|---------|------------------|
+| **Claude Code** | `claude-code` | `~/.claude.json` (user) / `.mcp.json` (project) |
+| **Claude Desktop** | `claude-desktop` | `~/Library/Application Support/Claude/...` |
+| **GitHub Copilot** | `copilot` | `~/.mcp.json` (user) / `.vscode/mcp.json` (project) |
+| **Cursor** | `cursor` | `~/.cursor/mcp.json` (user) / `.cursor/mcp.json` (project) |
+| **Windsurf** | `windsurf` | `~/.codeium/windsurf/mcp_config.json` |
+| **Roo Code** | `roo-code` | `~/.roo/mcp.json` (user) / `.roo/mcp.json` (project) |
+| **Zed** | `zed` | `~/.config/zed/settings.json` |
+| **Factory Droid** | `factory-droid` | `~/.factory/mcp.json` (user) / `.factory/mcp.json` (project) |
+
+### Setup Examples
+
+```bash
+# Claude Code (user scope - available in all projects)
+npx @lvmk/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
+
+# Cursor (project scope - only in current project)
+npx @lvmk/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
+
+# GitHub Copilot (VS Code project config)
+npx @lvmk/jira-mcp setup -c copilot -b https://jira.example.com -u admin -p secret -s project
+
+# Claude Desktop
+npx @lvmk/jira-mcp setup -c claude-desktop -b https://jira.example.com -u admin -p secret
+
+# Factory Droid
+npx @lvmk/jira-mcp setup -c factory-droid -b https://jira.example.com -u admin -p secret
+
+# Windsurf
+npx @lvmk/jira-mcp setup -c windsurf -b https://jira.example.com -u admin -p secret
+```
+
+### Other Commands
+
+```bash
+# Show help
+npx @lvmk/jira-mcp --help
+
+# List supported CLI tools
+npx @lvmk/jira-mcp list-clis
+
+# Show version
+npx @lvmk/jira-mcp --version
+```
+
+---
+
 ## Environment Variables
 
 | Variable | Required | Description |
