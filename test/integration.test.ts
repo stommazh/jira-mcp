@@ -132,7 +132,7 @@ async function testClaudeCodeIntegration(): Promise<void> {
         // Use claude mcp add-json to add the server with full config
         const mcpConfig = JSON.stringify({
             command: 'npx',
-            args: ['-y', '@lvmk/jira-mcp'],
+            args: ['-y', '@khanglvm/jira-mcp'],
             env: {
                 JIRA_BASE_URL: JIRA_BASE_URL,
                 JIRA_USERNAME: JIRA_USERNAME,
@@ -266,7 +266,7 @@ async function testClaudeCodeSetupCommand(): Promise<void> {
     const projectConfigPath = path.join(process.cwd(), '.mcp.json');
 
     // Test 1: Run our CLI setup command (project scope)
-    console.log('Testing: npx @lvmk/jira-mcp setup -c claude-code (simulated)...');
+    console.log('Testing: npx @khanglvm/jira-mcp setup -c claude-code (simulated)...');
     const setupResult = runSetup('claude-code', 'project');
 
     if (setupResult.success) {
@@ -294,7 +294,7 @@ async function testClaudeCodeSetupCommand(): Promise<void> {
         if (configContent.mcpServers?.jira) {
             const jiraConfig = configContent.mcpServers.jira;
             const hasCommand = jiraConfig.command === 'npx';
-            const hasArgs = jiraConfig.args?.includes('@lvmk/jira-mcp');
+            const hasArgs = jiraConfig.args?.includes('@khanglvm/jira-mcp');
             const hasEnv = jiraConfig.env?.JIRA_BASE_URL === JIRA_BASE_URL;
 
             if (hasCommand && hasArgs && hasEnv) {
@@ -398,7 +398,7 @@ async function testOpenCodeSetupCommand(): Promise<void> {
                 jira: {
                     type: 'local',
                     command: 'npx',
-                    args: ['-y', '@lvmk/jira-mcp'],
+                    args: ['-y', '@khanglvm/jira-mcp'],
                     env: {
                         JIRA_BASE_URL: JIRA_BASE_URL,
                         JIRA_USERNAME: JIRA_USERNAME,
@@ -531,7 +531,7 @@ async function testAntigravitySetupCommand(): Promise<void> {
 
     try {
         // Test 1: Run our CLI setup command
-        console.log('Testing: npx @lvmk/jira-mcp setup -c antigravity (simulated)...');
+        console.log('Testing: npx @khanglvm/jira-mcp setup -c antigravity (simulated)...');
         const setupResult = runSetup('antigravity', 'user');
 
         if (setupResult.success) {
@@ -653,7 +653,7 @@ async function testOpenCodeIntegration(): Promise<void> {
             mcpServers: {
                 jira: {
                     type: 'local',
-                    command: ['npx', '-y', '@lvmk/jira-mcp'],
+                    command: ['npx', '-y', '@khanglvm/jira-mcp'],
                     env: {
                         JIRA_BASE_URL: JIRA_BASE_URL,
                         JIRA_USERNAME: JIRA_USERNAME,

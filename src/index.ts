@@ -39,7 +39,7 @@ import {
  * Package information for server identification.
  */
 const SERVER_INFO = {
-    name: '@lvmk/jira-mcp',
+    name: '@khanglvm/jira-mcp',
     version: '1.0.0',
 };
 
@@ -48,7 +48,7 @@ const SERVER_INFO = {
  */
 function printHelp(): void {
     console.log(`
-@lvmk/jira-mcp - Jira MCP Server for Legacy Jira Server (Basic Auth)
+@khanglvm/jira-mcp - Jira MCP Server for Legacy Jira Server (Basic Auth)
 
 MODES:
 
@@ -61,15 +61,15 @@ MODES:
        JIRA_PASSWORD  - Password for basic auth
 
      Usage:
-       npx @lvmk/jira-mcp
+       npx @khanglvm/jira-mcp
 
   2. Setup Mode
      Inject MCP configuration into AI tool config files.
 
      Usage:
-       npx @lvmk/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
+       npx @khanglvm/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
 
-     Run 'npx @lvmk/jira-mcp setup --help' for more details.
+     Run 'npx @khanglvm/jira-mcp setup --help' for more details.
 
 COMMANDS:
   setup       Configure MCP in AI tool config files
@@ -79,13 +79,13 @@ COMMANDS:
 
 EXAMPLES:
   # Run as MCP server
-  JIRA_BASE_URL=https://jira.example.com JIRA_USERNAME=admin JIRA_PASSWORD=secret npx @lvmk/jira-mcp
+  JIRA_BASE_URL=https://jira.example.com JIRA_USERNAME=admin JIRA_PASSWORD=secret npx @khanglvm/jira-mcp
 
   # Setup for Claude Code
-  npx @lvmk/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
+  npx @khanglvm/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
 
   # Setup for Cursor (project scope)
-  npx @lvmk/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
+  npx @khanglvm/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
 `);
 }
 

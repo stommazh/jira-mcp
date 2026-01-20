@@ -1,4 +1,4 @@
-# @lvmk/jira-mcp
+# @khanglvm/jira-mcp
 
 MCP server for **legacy Jira Server** (v7.x) with Basic Authentication. Works with any MCP-compatible AI tool.
 
@@ -11,7 +11,7 @@ MCP server for **legacy Jira Server** (v7.x) with Basic Authentication. Works wi
 ### Quick Start
 
 ```bash
-npx @lvmk/jira-mcp
+npx @khanglvm/jira-mcp
 ```
 
 ### Configuration Formats
@@ -24,7 +24,7 @@ npx @lvmk/jira-mcp
   "mcpServers": {
     "jira": {
       "command": "npx",
-      "args": ["-y", "@lvmk/jira-mcp"],
+      "args": ["-y", "@khanglvm/jira-mcp"],
       "env": {
         "JIRA_BASE_URL": "http://jira.example.com:8080",
         "JIRA_USERNAME": "your-username",
@@ -45,7 +45,7 @@ npx @lvmk/jira-mcp
     "jira": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@lvmk/jira-mcp"],
+      "args": ["-y", "@khanglvm/jira-mcp"],
       "env": {
         "JIRA_BASE_URL": "http://jira.example.com:8080",
         "JIRA_USERNAME": "your-username",
@@ -66,7 +66,7 @@ mcp_servers:
     command: npx
     args:
       - -y
-      - "@lvmk/jira-mcp"
+      - "@khanglvm/jira-mcp"
     env:
       JIRA_BASE_URL: http://jira.example.com:8080
       JIRA_USERNAME: your-username
@@ -113,7 +113,7 @@ mcp_servers:
 Inject MCP configuration into your AI tool's config file:
 
 ```bash
-npx @lvmk/jira-mcp setup -c <tool> -b <url> -u <user> -p <pass> [-s <scope>]
+npx @khanglvm/jira-mcp setup -c <tool> -b <url> -u <user> -p <pass> [-s <scope>]
 ```
 
 ### Arguments
@@ -144,9 +144,9 @@ npx @lvmk/jira-mcp setup -c <tool> -b <url> -u <user> -p <pass> [-s <scope>]
 ### Examples
 
 ```bash
-npx @lvmk/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
-npx @lvmk/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
-npx @lvmk/jira-mcp list-clis  # List all tools
+npx @khanglvm/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
+npx @khanglvm/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
+npx @khanglvm/jira-mcp list-clis  # List all tools
 ```
 
 </details>
@@ -164,7 +164,7 @@ npx @lvmk/jira-mcp list-clis  # List all tools
   "mcpServers": {
     "jira": {
       "command": "npx",
-      "args": ["-y", "@lvmk/jira-mcp"],
+      "args": ["-y", "@khanglvm/jira-mcp"],
       "env": {
         "JIRA_BASE_URL": "http://jira.example.com:8080",
         "JIRA_USERNAME": "your-username",
@@ -184,7 +184,7 @@ npx @lvmk/jira-mcp list-clis  # List all tools
     "jira": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@lvmk/jira-mcp"],
+      "args": ["-y", "@khanglvm/jira-mcp"],
       "env": {
         "JIRA_BASE_URL": "http://jira.example.com:8080",
         "JIRA_USERNAME": "your-username",
@@ -203,7 +203,7 @@ npx @lvmk/jira-mcp list-clis  # List all tools
   "mcpServers": {
     "jira": {
       "command": "npx",
-      "args": ["-y", "@lvmk/jira-mcp"],
+      "args": ["-y", "@khanglvm/jira-mcp"],
       "env": {
         "JIRA_BASE_URL": "http://jira.example.com:8080",
         "JIRA_USERNAME": "your-username",
@@ -222,7 +222,7 @@ npx @lvmk/jira-mcp list-clis  # List all tools
   "mcpServers": {
     "jira": {
       "type": "local",
-      "command": ["npx", "-y", "@lvmk/jira-mcp"],
+      "command": ["npx", "-y", "@khanglvm/jira-mcp"],
       "env": {
         "JIRA_BASE_URL": "http://jira.example.com:8080",
         "JIRA_USERNAME": "your-username",

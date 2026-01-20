@@ -123,7 +123,7 @@ function getConfigFileInfo(cli: SupportedCli, scope: ConfigScope): ConfigFileInf
 function createJiraServerConfig(options: SetupOptions): McpServerConfig {
     return {
         command: 'npx',
-        args: ['-y', '@lvmk/jira-mcp'],
+        args: ['-y', '@khanglvm/jira-mcp'],
         env: {
             JIRA_BASE_URL: options.baseUrl,
             JIRA_USERNAME: options.username,
@@ -281,7 +281,7 @@ export function printSetupHelp(): void {
 Jira MCP Setup - Inject configuration into AI tool config files
 
 Usage:
-  npx @lvmk/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
+  npx @khanglvm/jira-mcp setup -c <cli> -b <url> -u <user> -p <pass> [-s <scope>]
 
 Arguments:
   -c, --cli        Target CLI tool (required)
@@ -300,13 +300,13 @@ Arguments:
 
 Examples:
   # Add to Claude Code user config
-  npx @lvmk/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
+  npx @khanglvm/jira-mcp setup -c claude-code -b https://jira.example.com -u admin -p secret
 
   # Add to Cursor project config
-  npx @lvmk/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
+  npx @khanglvm/jira-mcp setup -c cursor -b https://jira.example.com -u admin -p secret -s project
 
   # Add to GitHub Copilot (VS Code)
-  npx @lvmk/jira-mcp setup -c github-copilot -b https://jira.example.com -u admin -p secret -s project
+  npx @khanglvm/jira-mcp setup -c github-copilot -b https://jira.example.com -u admin -p secret -s project
 
 Supported CLI Tools:
   ┌─────────────────┬───────────────────────────────────────────────────────┐
