@@ -7,10 +7,19 @@
 # This wrapper downloads and runs the OpenTUI-based installer
 #
 
-set -euo pipefail
+set -eo pipefail
 
 readonly REPO_URL="https://github.com/khanglvm/jira-mcp"
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Detect if running via pipe (curl | bash) - BASH_SOURCE is empty in this case
+# shellcheck disable=SC2128
+if [[ -z "${BASH_SOURCE:-}" ]] || [[ ! -f "${BASH_SOURCE:-}" ]]; then
+  readonly IS_PIPED=true
+  readonly SCRIPT_DIR=""
+else
+  readonly IS_PIPED=false
+  readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
 
 # Colors
 readonly C_RESET='\033[0m'
@@ -76,7 +85,8 @@ main() {
   
   if [[ -z "$runtime" ]]; then
     echo -e "${C_ERROR}Error: Bun or Node.js 18+ required.${C_RESET}"
-    read -p "Install Bun now? [Y/n] " install_bun
+    # Use /dev/tty for read when stdin might be piped
+    read -p "Install Bun now? [Y/n] " install_bun < /dev/tty
     if [[ "${install_bun,,}" != "n" ]]; then
       install_bun_if_needed
       runtime="bun"
@@ -85,17 +95,21 @@ main() {
     fi
   fi
 
-  # Check if running from repo or via curl
-  local tui_dir="$SCRIPT_DIR/tui"
+  # Determine TUI directory based on execution mode
+  local tui_dir=""
+  local temp_dir=""
   
-  if [[ ! -d "$tui_dir" ]]; then
-    # Running via curl - clone to temp directory
-    local temp_dir=$(mktemp -d)
+  if [[ "$IS_PIPED" == "true" ]] || [[ -z "$SCRIPT_DIR" ]] || [[ ! -d "$SCRIPT_DIR/tui" ]]; then
+    # Running via curl or TUI not found locally - clone to temp directory
+    temp_dir=$(mktemp -d)
     trap "rm -rf $temp_dir" EXIT
     
     echo -e "${C_MUTED}Downloading installer...${C_RESET}"
     git clone --depth 1 --quiet "$REPO_URL" "$temp_dir"
     tui_dir="$temp_dir/scripts/tui"
+  else
+    # Running from local repo
+    tui_dir="$SCRIPT_DIR/tui"
   fi
 
   # Install dependencies if needed
@@ -104,8 +118,15 @@ main() {
     (cd "$tui_dir" && $runtime install --silent 2>/dev/null || $runtime install)
   fi
 
-  # Run the TUI
-  (cd "$tui_dir" && $runtime run src/installer.tsx)
+  # Run the TUI with proper TTY allocation
+  # When running via pipe (curl | bash), stdin is the pipe, not the terminal
+  # The TUI needs access to the actual terminal for keyboard input
+  if [[ "$IS_PIPED" == "true" ]] && [[ -t 0 ]] || [[ ! -t 0 ]]; then
+    # Redirect stdin from the actual terminal device
+    (cd "$tui_dir" && exec < /dev/tty && $runtime run src/installer.tsx)
+  else
+    (cd "$tui_dir" && $runtime run src/installer.tsx)
+  fi
 }
 
 main "$@"
