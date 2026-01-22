@@ -274,7 +274,7 @@ Use jira_create_issue with:
 ### Getting Started
 
 ```bash
-git clone git@github.com:stommazh/jira-mcp.git
+git clone git@github.com:khanglvm/jira-mcp.git
 cd jira-mcp
 npm install
 npm run build
