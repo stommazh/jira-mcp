@@ -119,12 +119,12 @@ main() {
   fi
 
   # Run the TUI with proper TTY allocation
-  # When running via pipe (curl | bash), stdin is the pipe, not the terminal
-  # The TUI needs access to the actual terminal for keyboard input
-  # The redirect MUST be applied directly to the runtime command, not via exec in subshell
-  if [[ ! -t 0 ]]; then
-    # stdin is not a TTY (piped execution) - redirect from /dev/tty
-    (cd "$tui_dir" && $runtime run src/installer.tsx < /dev/tty)
+  # When running via pipe (curl | bash), stdin AND stdout are not TTY
+  # OpenTUI needs BOTH connected to TTY for terminal capability detection
+  # (queries written to stdout, responses read from stdin)
+  if [[ ! -t 0 ]] || [[ ! -t 1 ]]; then
+    # Redirect both stdin and stdout from/to /dev/tty
+    (cd "$tui_dir" && $runtime run src/installer.tsx < /dev/tty > /dev/tty)
   else
     (cd "$tui_dir" && $runtime run src/installer.tsx)
   fi
