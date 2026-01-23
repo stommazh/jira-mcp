@@ -34,11 +34,23 @@ show_help() {
   cat <<EOF
 ${C_ACCENT}@khanglvm/jira-mcp Interactive Installer${C_RESET}
 
-${C_MUTED}Usage (process substitution for interactive TUI):${C_RESET}
-  bash <(curl -fsSL https://raw.githubusercontent.com/khanglvm/jira-mcp/main/scripts/install.sh)
+${C_MUTED}USAGE:${C_RESET}
+  ./scripts/install.sh [OPTIONS]
 
-${C_MUTED}Or run locally:${C_RESET}
+${C_MUTED}OPTIONS:${C_RESET}
+  --url <URL>     Pre-fill Jira base URL (e.g., https://jira.example.com:8080)
+                  User will still be prompted for username/password
+  -h, --help      Show this help message
+
+${C_MUTED}EXAMPLES:${C_RESET}
+  # Interactive mode (default)
   ./scripts/install.sh
+
+  # Pre-fill Jira URL
+  ./scripts/install.sh --url https://jira.example.com
+
+  # Remote install with URL
+  bash <(curl -fsSL https://raw.githubusercontent.com/khanglvm/jira-mcp/main/scripts/install.sh) --url https://jira.example.com
 
 ${C_MUTED}Requirements:${C_RESET}
   • Bun (recommended) or Node.js 18+
@@ -48,6 +60,7 @@ ${C_MUTED}Supported Tools:${C_RESET}
   • Claude Code (CLI)
   • OpenCode
 
+${C_MUTED}For more info:${C_RESET} https://github.com/khanglvm/jira-mcp
 EOF
 }
 
@@ -74,11 +87,47 @@ install_bun_if_needed() {
   echo -e "${C_SUCCESS}✓ Bun installed${C_RESET}"
 }
 
+# Global variable for CLI argument
+JIRA_URL=""
+
 main() {
-  # Handle --help
-  if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
-    show_help
-    exit 0
+  # Parse command-line arguments
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --url)
+        if [[ -z "${2:-}" ]] || [[ "${2:-}" == --* ]]; then
+          echo -e "${C_ERROR}Error: --url requires a value${C_RESET}"
+          show_help
+          exit 1
+        fi
+        JIRA_URL="$2"
+        shift 2
+        ;;
+      --help|-h)
+        show_help
+        exit 0
+        ;;
+      *)
+        echo -e "${C_ERROR}Unknown option: $1${C_RESET}"
+        show_help
+        exit 1
+        ;;
+    esac
+  done
+
+  # Validate URL format if provided (permissive: allows IPs, localhost, non-standard ports)
+  if [[ -n "$JIRA_URL" ]]; then
+    # Permissive regex: http(s)://[domain|IP|localhost][:port][/path]
+    # Accepts: IPs (192.168.1.1), localhost, domains (jira.example.com), non-standard ports
+    if [[ ! "$JIRA_URL" =~ ^https?://[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?(:[0-9]+)?(/.*)?$ ]]; then
+      echo -e "${C_ERROR}Error: Invalid URL format. Expected: http(s)://domain[:port][/path]${C_RESET}"
+      echo -e "${C_MUTED}Examples:${C_RESET}"
+      echo -e "  ${C_MUTED}• https://jira.example.com${C_RESET}"
+      echo -e "  ${C_MUTED}• http://192.168.1.100:8080${C_RESET}"
+      echo -e "  ${C_MUTED}• http://localhost:8080${C_RESET}"
+      exit 1
+    fi
+    echo -e "${C_SUCCESS}✓ Using Jira URL: ${C_RESET}$JIRA_URL"
   fi
 
   # Check for runtime
@@ -117,6 +166,11 @@ main() {
   if [[ ! -d "$tui_dir/node_modules" ]]; then
     echo -e "${C_MUTED}Installing dependencies...${C_RESET}"
     (cd "$tui_dir" && $runtime install --silent 2>/dev/null || $runtime install)
+  fi
+
+  # Export URL for TUI if provided
+  if [[ -n "$JIRA_URL" ]]; then
+    export JIRA_MCP_URL="$JIRA_URL"
   fi
 
   # Run the TUI with proper TTY allocation

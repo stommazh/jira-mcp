@@ -27,8 +27,14 @@ export function App() {
     const [selectedTool, setSelectedTool] = useState<DetectedTool | null>(null);
 
     // Form state
-    const [form, setForm] = useState<CredentialsForm>({ baseUrl: '', username: '', password: '' });
-    const [currentField, setCurrentField] = useState<'url' | 'username' | 'password'>('url');
+    const [form, setForm] = useState<CredentialsForm>(() => ({
+        baseUrl: process.env.JIRA_MCP_URL || '',
+        username: '',
+        password: ''
+    }));
+    const [currentField, setCurrentField] = useState<'url' | 'username' | 'password'>(
+        () => process.env.JIRA_MCP_URL ? 'username' : 'url'
+    );
     const [inputBuffer, setInputBuffer] = useState('');
 
     // Result state
