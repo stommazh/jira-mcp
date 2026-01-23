@@ -52,8 +52,8 @@ ${C_MUTED}EXAMPLES:${C_RESET}
   # Remote install with URL
   bash <(curl -fsSL https://raw.githubusercontent.com/khanglvm/jira-mcp/main/scripts/install.sh) --url https://jira.example.com
 
-${C_MUTED}Requirements:${C_RESET}
-  • Bun (recommended) or Node.js 18+
+${C_MUTED}REQUIREMENTS:${C_RESET}
+  • Bun or Node.js 18+ (auto-installed if missing)
 
 ${C_MUTED}Supported Tools:${C_RESET}
   • Claude Desktop
@@ -77,14 +77,6 @@ check_runtime() {
   else
     echo ""
   fi
-}
-
-install_bun_if_needed() {
-  echo -e "${C_WARNING}Bun not found. Installing Bun...${C_RESET}"
-  curl -fsSL https://bun.sh/install | bash
-  export BUN_INSTALL="$HOME/.bun"
-  export PATH="$BUN_INSTALL/bin:$PATH"
-  echo -e "${C_SUCCESS}✓ Bun installed${C_RESET}"
 }
 
 # Global variable for CLI argument
@@ -132,15 +124,20 @@ main() {
 
   # Check for runtime
   local runtime=$(check_runtime)
-  
+
   if [[ -z "$runtime" ]]; then
-    echo -e "${C_ERROR}Error: Bun or Node.js 18+ required.${C_RESET}"
-    # Use /dev/tty for read when stdin might be piped
-    read -p "Install Bun now? [Y/n] " install_bun < /dev/tty
-    if [[ "${install_bun,,}" != "n" ]]; then
-      install_bun_if_needed
-      runtime="bun"
-    else
+    echo -e "${C_WARNING}⚠ No runtime found. Installing Bun...${C_RESET}"
+    curl -fsSL https://bun.sh/install | bash
+    # Set PATH for current script execution
+    BUN_INSTALL="$HOME/.bun"
+    PATH="$BUN_INSTALL/bin:$PATH"
+    runtime="bun"
+    echo -e "${C_SUCCESS}✓ Bun ready${C_RESET}"
+
+    # Verify bun is actually available
+    if ! command -v bun &>/dev/null; then
+      echo -e "${C_ERROR}Error: Bun installation failed. Please install manually:${C_RESET}"
+      echo -e "${C_MUTED}  curl -fsSL https://bun.sh/install | bash${C_RESET}"
       exit 1
     fi
   fi

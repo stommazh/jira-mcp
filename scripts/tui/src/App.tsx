@@ -12,7 +12,7 @@ import { getConfigPath } from './detection.ts';
 import { injectConfig, type InjectionResult } from './config.ts';
 import { batchInstall, type InstallResult } from './batch-installer.ts';
 import { validateBatchScopes } from './validation.ts';
-import { createRegistry } from '../../src/mcp-registry.js';
+import { createRegistry, type McpRegistry } from '../../../src/mcp-registry.js';
 import type { CredentialsForm, ViewMode } from './types.ts';
 import { useKeyboardHandlers } from './hooks/use-keyboard-handlers.ts';
 import {
@@ -35,7 +35,7 @@ export function App() {
     const renderer = useRenderer();
 
     // MCP Registry state
-    const [registry, setRegistry] = useState<typeof import('../../src/mcp-registry.js').McpRegistry | null>(null);
+    const [registry, setRegistry] = useState<McpRegistry | null>(null);
     const [tools, setTools] = useState<DetectionResult[]>([]);
     const [legacyTools, setLegacyTools] = useState<any[]>([]);
 
