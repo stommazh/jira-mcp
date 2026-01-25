@@ -133,7 +133,8 @@ main() {
   
   if [[ "$IS_PIPED" == "true" ]] || [[ -z "$SCRIPT_DIR" ]] || [[ ! -f "$SCRIPT_DIR/installer.mjs" ]]; then
     # Running via curl or installer not found locally - download to temp
-    temp_file=$(mktemp)
+    # Use .mjs extension so Node.js ESM loader recognizes import/export syntax
+    temp_file=$(mktemp).mjs
     trap "rm -f $temp_file" EXIT
     
     echo -e "${C_MUTED}Downloading installer...${C_RESET}"
