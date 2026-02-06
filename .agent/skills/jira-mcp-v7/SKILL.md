@@ -245,3 +245,188 @@ Call: jira_transition_issue(
 6. **Validate JQL in Jira's UI** before using in API calls
 7. **Quote values with spaces**: `project = "My Project"` not `project = My Project`
 8. **Use ORDER BY** to sort results: `ORDER BY created DESC`
+
+---
+
+## Response Formatting Guidelines
+
+### Constructing Ticket Links
+
+For self-hosted Jira Server 7.x, ticket URLs follow this pattern:
+```
+{JIRA_BASE_URL}/browse/{ISSUE_KEY}
+```
+
+**Example:** If `JIRA_BASE_URL=https://jira.company.com`, then:
+- `XESM-1234` → `https://jira.company.com/browse/XESM-1234`
+
+**IMPORTANT:** The agent should construct and include clickable links in responses so users can quickly navigate to tickets.
+
+### Displaying Multiple Tickets (Table Format)
+
+When showing 3+ tickets, use a markdown table:
+
+```markdown
+Found **5 tickets** matching your query:
+
+| Key | Summary | Status | Assignee | Link |
+|-----|---------|--------|----------|------|
+| PROJ-101 | Fix login timeout | 🔵 In Progress | john.doe | [Open](url) |
+| PROJ-102 | Update homepage | 📋 To Do | - | [Open](url) |
+| PROJ-103 | Database migration | ✅ Done | jane.smith | [Open](url) |
+```
+
+### Single Ticket Detail Format
+
+When showing one ticket's details:
+
+```markdown
+### PROJ-123: Fix login bug
+
+| Field | Value |
+|-------|-------|
+| **Status** | 🔵 In Progress |
+| **Priority** | High |
+| **Assignee** | john.doe |
+| **Reporter** | admin |
+| **Created** | 2026-02-01 |
+| **Link** | [Open in Jira](url) |
+
+**Description:**
+> Brief summary of the issue...
+```
+
+### Status Icons
+
+Use emoji for visual scanning:
+- 📋 To Do (statusCategory: `new`)
+- 🔵 In Progress (statusCategory: `indeterminate`)
+- ✅ Done (statusCategory: `done`)
+
+---
+
+## Common Use Cases
+
+### 1. Daily Standup Prep
+**User says:** "Show my in-progress tickets" or "What am I working on?"
+
+```jql
+assignee = currentUser() AND statusCategory = "In Progress" ORDER BY updated DESC
+```
+
+### 2. Sprint Overview
+**User says:** "What's left in the sprint?" or "Show todo tickets in PROJ"
+
+```jql
+project = PROJ AND statusCategory = "To Do" ORDER BY priority DESC
+```
+
+### 3. Bug Triage
+**User says:** "Show unassigned bugs" or "Find bugs without an owner"
+
+```jql
+type = Bug AND assignee IS EMPTY AND resolution IS EMPTY ORDER BY created DESC
+```
+
+### 4. Ticket Details
+**User says:** "Tell me about XESM-1234" or "What's the status of PROJ-567?"
+
+→ Call `jira_get_issue(issueKey: "XESM-1234")`
+
+### 5. Status Updates
+**User says:** "Move PROJ-123 to Done" or "Start working on XESM-456"
+
+→ First: `jira_get_transitions(issueKey)` 
+→ Then: `jira_transition_issue(issueKey, transitionId)`
+
+### 6. Quick Create
+**User says:** "Create a bug for login crash in PROJ"
+
+→ `jira_create_issue(projectKey: "PROJ", summary: "Login crash", issueType: "Bug")`
+
+### 7. Weekly Report
+**User says:** "Show tickets I completed this week"
+
+```jql
+assignee = currentUser() AND statusCategory = "Done" AND updated >= startOfWeek() ORDER BY updated DESC
+```
+
+### 8. Overdue Items
+**User says:** "Show overdue tickets"
+
+```jql
+duedate < now() AND resolution IS EMPTY ORDER BY duedate ASC
+```
+
+---
+
+## Response Best Practices for AI Agents
+
+### Do's ✅
+
+1. **Always include ticket links** - Users need quick access to Jira
+2. **Show counts first** - "Found 12 tickets matching your query"
+3. **Use tables for lists** - More than 2 tickets should be in table format
+4. **Keep summaries short** - Truncate long summaries to ~60 characters
+5. **Confirm actions** - "Created **PROJ-456**: Login crash - [View in Jira](url)"
+6. **Show relevant fields only** - Don't dump all 50+ fields from API response
+7. **Limit initial results** - Show top 10, offer to show more
+
+### Don'ts ❌
+
+1. **Don't show raw JSON** - Always format for human readability
+2. **Don't omit links** - Ticket keys without links are frustrating
+3. **Don't show empty fields** - Skip fields that have no value
+4. **Don't expose internal IDs** - Users care about keys, not numeric IDs
+
+### Handling Empty Results
+
+When a search returns 0 results:
+```markdown
+No tickets found matching your query.
+
+**Search criteria:**
+- Project: PROJ
+- Status: To Do
+- Assignee: currentUser()
+
+**Suggestions:**
+- Check if you have permission to view issues in this project
+- Try broadening the search (e.g., remove assignee filter)
+- Verify the project key is correct
+```
+
+### Handling Errors
+
+When an API call fails:
+```markdown
+⚠️ Unable to retrieve tickets.
+
+**Error:** The value 'To Do' does not exist for the field 'type'
+
+**Fix:** "To Do" is a status category, not an issue type. Use:
+- `statusCategory = "To Do"` for status filtering
+- `type = Bug` or `type = Task` for type filtering
+```
+
+---
+
+## Limitations (Jira Server 7.x)
+
+| Limitation | Description | Workaround |
+|------------|-------------|------------|
+| **No attachments** | Cannot upload/download files via API | Instruct user to attach manually in Jira |
+| **No sprint fields** | Sprint data may not be available in all configurations | Use labels or custom fields if configured |
+| **Transition-only status** | Cannot set status directly | Use `jira_get_transitions` + `jira_transition_issue` |
+| **100 result limit** | Max 100 issues per search | Use pagination with `startAt` |
+| **Permission visibility** | Only returns issues user can view | Clarify missing results may be permission issues |
+| **No bulk operations** | Cannot update multiple issues at once | Loop through issues individually |
+| **No rich text editing** | Descriptions are plain text or wiki markup | Use Jira Wiki markup if needed |
+| **No webhooks** | Cannot set up real-time notifications | Poll for updates if needed |
+
+### Self-Hosted Specific Notes
+
+- **Version compatibility**: This skill is designed for Jira Server 7.x REST API v2
+- **URL format**: Uses `{JIRA_BASE_URL}/browse/{KEY}` not cloud format
+- **Authentication**: Uses basic auth (username + password/token), not OAuth
+- **Custom fields**: May have instance-specific custom field IDs
