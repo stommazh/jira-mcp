@@ -22,9 +22,9 @@ winget install -e --id OpenJS.NodeJS.LTS
 
 ---
 
-## 🚀 Quick Install (Recommended)
+## 🚀 Quick Install
 
-The fastest way to install is using **mcpm** (MCP Manager) - a universal installer that works with all AI agents:
+Install using **mcpm** (MCP Manager) - a universal installer that works with all AI agents:
 
 ```bash
 npx @khanglvm/mcpm https://github.com/khanglvm/jira-mcp
@@ -36,86 +36,22 @@ npx @khanglvm/mcpm https://github.com/khanglvm/jira-mcp
 - Transforms config to match each agent's format
 - Safely merges with existing configurations
 
-### Alternative: Bash Script
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/khanglvm/jira-mcp/main/scripts/install.sh)
-```
-
 ---
 
 ## 🤖 For AI Agents
 
-This repository includes a skill guide at `.agent/skills/jira-mcp-v7/SKILL.md` that provides:
+### MCP Installation Workflow
+
+Follow the [MCP Server Installation Workflow](https://raw.githubusercontent.com/khanglvm/agent-tools/refs/heads/main/.agent/workflows/install-mcp-server.md) to install this MCP server.
+
+### Agent Skill
+
+This repository includes an agent skill at [`.agent/skills/jira-mcp-v7/SKILL.md`](./.agent/skills/jira-mcp-v7/SKILL.md) that provides:
 
 - **Complete JQL reference** - operators, fields, functions, and date syntax
 - **Critical gotchas** - `statusCategory` ("To Do") vs `status` vs `type` (Bug/Task)
 - **Common patterns** - ready-to-use JQL queries
 - **Workflow guidance** - how to use transitions correctly
-
-**Key insight for AI agents:**
-```
-⚠️ "To Do" is a statusCategory, NOT an issue type!
-
-❌ type = "To Do"              → ERROR: "value does not exist"
-✅ statusCategory = "To Do"    → Works! Returns issues in "To Do" category
-```
-
----
-
-## 📦 Configuration Formats
-
-### JSON (camelCase) - Claude Desktop, Claude Code, Antigravity, Cursor
-
-```json
-{
-  "mcpServers": {
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "@khanglvm/jira-mcp"],
-      "env": {
-        "JIRA_BASE_URL": "http://jira.example.com:8080",
-        "JIRA_USERNAME": "your-username",
-        "JIRA_PASSWORD": "your-password"
-      }
-    }
-  }
-}
-```
-
-### JSON (dash-case) - VS Code, GitHub Copilot
-
-```json
-{
-  "servers": {
-    "jira": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@khanglvm/jira-mcp"],
-      "env": {
-        "JIRA_BASE_URL": "http://jira.example.com:8080",
-        "JIRA_USERNAME": "your-username",
-        "JIRA_PASSWORD": "your-password"
-      }
-    }
-  }
-}
-```
-
-### YAML (Codex)
-
-```yaml
-mcp_servers:
-  jira:
-    command: npx
-    args:
-      - -y
-      - "@khanglvm/jira-mcp"
-    env:
-      JIRA_BASE_URL: http://jira.example.com:8080
-      JIRA_USERNAME: your-username
-      JIRA_PASSWORD: your-password
-```
 
 ---
 
@@ -143,10 +79,10 @@ mcp_servers:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `JIRA_BASE_URL` | ✅ | Jira instance URL |
-| `JIRA_USERNAME` | ✅ | Username |
-| `JIRA_PASSWORD` | ✅ | Password |
-| `JIRA_API_VERSION` | ❌ | API version (default: `2`) |
+| `JIRA_BASE_URL` | yes | Jira instance URL |
+| `JIRA_USERNAME` | yes | Username |
+| `JIRA_PASSWORD` | yes | Password |
+| `JIRA_API_VERSION` | no | API version (default: `2`) |
 
 ## 📜 Changelog
 
