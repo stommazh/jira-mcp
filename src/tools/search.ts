@@ -94,7 +94,14 @@ Build JQL from natural language requests:
 - "issues updated this week" → updated >= startOfWeek()
 - "unassigned bugs" → assignee IS EMPTY AND type = Bug
 
-Common JQL fields: project, status, assignee, reporter, priority, type, created, updated, due`,
+Common JQL fields: project, status, assignee, reporter, priority, type, created, updated, due
+
+CRITICAL JQL GOTCHAS:
+- statusCategory ("To Do", "In Progress", "Done") is NOT an issue type! Use for broad status filtering.
+- status (exact workflow status name like "Open", "In Review") is project-specific.  
+- type (Bug, Task, Story, Epic) is the issue type field.
+- "todo tickets" → statusCategory = "To Do", NOT type = "To Do" (which causes errors)
+- Example: statusCategory = "To Do" AND assignee = currentUser() AND created >= -1w`,
         inputSchema: {
             type: 'object' as const,
             properties: {

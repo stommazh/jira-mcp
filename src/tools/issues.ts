@@ -288,7 +288,9 @@ Returns: summary, description, status, priority, assignee, reporter, labels, dat
 - Create a ticket for new work
 - Add something to the backlog
 
-Defaults to 'Task' type. Common types: Bug, Task, Story, Epic, Sub-task.`,
+Defaults to 'Task' type. Common types: Bug, Task, Story, Epic, Sub-task.
+
+IMPORTANT: issueType is Bug/Task/Story/Epic - NOT "To Do" or "In Progress" (those are statusCategory values, not types).`,
         inputSchema: {
             type: 'object' as const,
             properties: {

@@ -92,7 +92,11 @@ export const transitionToolDefinitions = [
 - Start, complete, close, or reopen a ticket
 - Change workflow state
 
-Returns list of valid transitions with IDs. Required before calling jira_transition_issue.`,
+Returns list of valid transitions with IDs. Required before calling jira_transition_issue.
+
+NOTE: You cannot directly set status. Jira uses workflows with transitions between statuses.
+Each transition has an ID and leads to a target status (e.g., "Start Progress" → "In Progress").
+The response includes toStatusCategory (To Do/In Progress/Done) to help identify the right transition.`,
         inputSchema: {
             type: 'object' as const,
             properties: {
@@ -112,7 +116,10 @@ Returns list of valid transitions with IDs. Required before calling jira_transit
 - Reopen a closed issue
 - Change issue status
 
-IMPORTANT: Call jira_get_transitions first to get valid transition IDs.`,
+IMPORTANT: Call jira_get_transitions first to get valid transition IDs.
+
+Workflow: 1) Call jira_get_transitions to see available transitions 2) Find the transition matching desired target status 3) Use that transition's ID here.
+You cannot set status directly - you must use the workflow transition.`,
         inputSchema: {
             type: 'object' as const,
             properties: {
